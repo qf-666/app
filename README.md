@@ -75,12 +75,11 @@ xcodebuild \
 
 ## GitHub Actions / Release
 
-- 推送到 `main`：自动生成工程、执行测试、构建 iOS Simulator 包并上传 Actions artifact
-- 推送 `v*` 标签：在构建成功后自动创建或更新 GitHub Release，并上传构建产物
+- 推送到 `main`：自动生成工程、执行测试、构建 `iphoneos` 无签名 `.ipa` 并上传 Actions artifact
+- 推送 `v*` 标签：在构建成功后自动创建或更新 GitHub Release，并上传无签名 `.ipa`
 
-当前默认版本号为 `v1.0.0`。
+当前版本号为 `v1.0.1`。
 
 ## 平台说明
 
 当前会话运行在 **Windows + PowerShell**。由于本地没有 `Xcode`，iOS 编译与测试验证依赖 GitHub 的 `macOS` Runner 完成。
-
