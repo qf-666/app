@@ -94,7 +94,7 @@ jobs:
           echo "artifact_path=$ARTIFACT_PATH" >> "$GITHUB_OUTPUT"
 
       - name: Upload Actions artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.package.outputs.artifact_name }}
           path: ${{ steps.package.outputs.artifact_path }}
