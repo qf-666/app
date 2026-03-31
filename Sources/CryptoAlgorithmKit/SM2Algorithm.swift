@@ -14,8 +14,9 @@ public struct SM2Algorithm: AlgorithmDemo {
         let message = input.message.isEmpty ? "Hello from iOS SM2 demo" : input.message
         let userID = input.userID.isEmpty ? "1234567812345678" : input.userID
 
-        guard let keyPair = GMSm2Utils.generateKey(),
-              let publicKey = keyPair.publicKey,
+        let keyPair = GMSm2Utils.generateKey()
+
+        guard let publicKey = keyPair.publicKey,
               let privateKey = keyPair.privateKey else {
             throw AlgorithmDemoError.invalidOutput("Failed to generate an SM2 key pair.")
         }
@@ -64,4 +65,3 @@ public struct SM2Algorithm: AlgorithmDemo {
         )
     }
 }
-
