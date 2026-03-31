@@ -14,9 +14,10 @@ final class DemoViewModel: ObservableObject {
     private let registry: any AlgorithmRunning
 
     init(registry: any AlgorithmRunning = AlgorithmRegistry()) {
+        let algorithms = registry.supportedAlgorithms()
         self.registry = registry
-        self.availableAlgorithms = registry.supportedAlgorithms()
-        self.selectedAlgorithmID = self.availableAlgorithms.first?.id ?? "sm2"
+        self.availableAlgorithms = algorithms
+        self.selectedAlgorithmID = algorithms.first?.id ?? "sm2"
         self.message = "Hello from iOS SM2 demo"
         self.userID = "1234567812345678"
     }
