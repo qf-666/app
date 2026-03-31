@@ -2,13 +2,14 @@ name: CryptoAlgorithmDemo
 
 options:
   createIntermediateGroups: true
+  transitivelyLinkDependencies: true
 
 settings:
   base:
     SWIFT_VERSION: 5.10
-    MARKETING_VERSION: 1.0.2
-    CURRENT_PROJECT_VERSION: 3
-    IPHONEOS_DEPLOYMENT_TARGET: 17.0
+    MARKETING_VERSION: 1.0.3
+    CURRENT_PROJECT_VERSION: 4
+    IPHONEOS_DEPLOYMENT_TARGET: 16.0
     CODE_SIGN_STYLE: Automatic
 
 packages:
@@ -20,7 +21,7 @@ targets:
   CryptoAlgorithmKit:
     type: framework
     platform: iOS
-    deploymentTarget: "17.0"
+    deploymentTarget: "16.0"
     sources:
       - Sources/CryptoAlgorithmKit
     dependencies:
@@ -36,7 +37,7 @@ targets:
   CryptoAlgorithmDemo:
     type: application
     platform: iOS
-    deploymentTarget: "17.0"
+    deploymentTarget: "16.0"
     sources:
       - App
     dependencies:
@@ -52,7 +53,7 @@ targets:
   CryptoAlgorithmKitTests:
     type: bundle.unit-test
     platform: iOS
-    deploymentTarget: "17.0"
+    deploymentTarget: "16.0"
     sources:
       - Tests/CryptoAlgorithmKitTests
     dependencies:
@@ -66,7 +67,7 @@ targets:
   CryptoAlgorithmDemoTests:
     type: bundle.unit-test
     platform: iOS
-    deploymentTarget: "17.0"
+    deploymentTarget: "16.0"
     sources:
       - Tests/CryptoAlgorithmDemoTests
     dependencies:

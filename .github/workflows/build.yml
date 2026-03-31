@@ -87,6 +87,12 @@ jobs:
             exit 1
           fi
 
+          if [[ ! -f "$APP_PATH/Frameworks/GMObjC.framework/GMObjC" ]]; then
+            echo "GMObjC.framework was not embedded into the app bundle." >&2
+            find "$APP_PATH" -maxdepth 3 \( -name '*.framework' -o -name '*.app' \) -print
+            exit 1
+          fi
+
           ARTIFACT_NAME="${ARTIFACT_PREFIX}-${VERSION}"
           ARTIFACT_PATH="$RUNNER_TEMP/${ARTIFACT_NAME}.ipa"
           PACKAGE_DIR="$RUNNER_TEMP/${ARTIFACT_NAME}"
