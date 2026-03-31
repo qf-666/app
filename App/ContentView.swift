@@ -46,6 +46,7 @@ struct ContentView: View {
                         .autocorrectionDisabled()
                 }
 
+                Section("说明") {
                     Text("点上面的算法项会立即执行当前算法，并用下面的输入参数生成结果。")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
