@@ -1,0 +1,79 @@
+name: CryptoAlgorithmDemo
+
+options:
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: 5.10
+    MARKETING_VERSION: 1.0.0
+    CURRENT_PROJECT_VERSION: 1
+    IPHONEOS_DEPLOYMENT_TARGET: 17.0
+    CODE_SIGN_STYLE: Automatic
+
+packages:
+  GMObjC:
+    url: https://github.com/muzipiao/GMObjC.git
+    from: 4.0.3
+
+targets:
+  CryptoAlgorithmKit:
+    type: framework
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - Sources/CryptoAlgorithmKit
+    dependencies:
+      - package: GMObjC
+        product: GMObjC
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.qf666.cryptoalgorithmdemo.kit
+        GENERATE_INFOPLIST_FILE: YES
+        SKIP_INSTALL: YES
+        DEFINES_MODULE: YES
+
+  CryptoAlgorithmDemo:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - App
+    dependencies:
+      - target: CryptoAlgorithmKit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.qf666.cryptoalgorithmdemo
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: CryptoAlgorithmDemo
+        ASSETCATALOG_COMPILER_APPICON_NAME: ""
+        DEVELOPMENT_ASSET_PATHS: ""
+
+  CryptoAlgorithmKitTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - Tests/CryptoAlgorithmKitTests
+    dependencies:
+      - target: CryptoAlgorithmKit
+    hostApplication: CryptoAlgorithmDemo
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.qf666.cryptoalgorithmdemo.tests
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  CryptoAlgorithmDemo:
+    build:
+      targets:
+        CryptoAlgorithmDemo: all
+        CryptoAlgorithmKit: all
+    test:
+      targets:
+        - name: CryptoAlgorithmKitTests
+    run:
+      config: Debug
+    archive:
+      config: Release
+

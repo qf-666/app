@@ -1,0 +1,13 @@
+.DS_Store
+.build/
+DerivedData/
+Packages/
+.swiftpm/
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+*.xcuserstate
+task_plan.md
+findings.md
+progress.md
+

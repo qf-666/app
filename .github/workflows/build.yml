@@ -1,0 +1,117 @@
+name: build-and-release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  PROJECT_NAME: CryptoAlgorithmDemo
+  SCHEME_NAME: CryptoAlgorithmDemo
+  ARTIFACT_PREFIX: app-ios-simulator
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Select an available iPhone simulator
+        id: simulator
+        shell: bash
+        run: |
+          DEVICE_NAME="$(xcrun simctl list devices available | grep -Eo 'iPhone[^()]+' | head -n 1 | xargs)"
+          if [[ -z "$DEVICE_NAME" ]]; then
+            echo "No available iPhone simulator was found." >&2
+            xcrun simctl list devices available
+            exit 1
+          fi
+
+          echo "device_name=$DEVICE_NAME" >> "$GITHUB_OUTPUT"
+          echo "destination=platform=iOS Simulator,name=$DEVICE_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Run unit tests
+        shell: bash
+        run: |
+          xcodebuild \
+            -project "$PROJECT_NAME.xcodeproj" \
+            -scheme "$SCHEME_NAME" \
+            -destination "${{ steps.simulator.outputs.destination }}" \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            test
+
+      - name: Build release app for iOS Simulator
+        shell: bash
+        run: |
+          xcodebuild \
+            -project "$PROJECT_NAME.xcodeproj" \
+            -scheme "$SCHEME_NAME" \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination "${{ steps.simulator.outputs.destination }}" \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Package build artifact
+        id: package
+        shell: bash
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            VERSION="${{ github.ref_name }}"
+          else
+            VERSION="snapshot-${GITHUB_SHA::7}"
+          fi
+
+          APP_PATH="$(find "$RUNNER_TEMP/DerivedData/Build/Products/Release-iphonesimulator" -maxdepth 1 -name '*.app' -print -quit)"
+          if [[ -z "$APP_PATH" ]]; then
+            echo "Unable to find the built .app bundle." >&2
+            find "$RUNNER_TEMP/DerivedData/Build/Products" -maxdepth 2 -type d
+            exit 1
+          fi
+
+          ARTIFACT_NAME="${ARTIFACT_PREFIX}-${VERSION}"
+          ARTIFACT_PATH="$RUNNER_TEMP/${ARTIFACT_NAME}.zip"
+
+          ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$ARTIFACT_PATH"
+
+          echo "artifact_name=$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
+          echo "artifact_path=$ARTIFACT_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Upload Actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.package.outputs.artifact_name }}
+          path: ${{ steps.package.outputs.artifact_path }}
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          TAG="${{ github.ref_name }}"
+          TITLE="app iOS Demo ${TAG}"
+          NOTES="Automated iOS Simulator build for ${TAG}."
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "${{ steps.package.outputs.artifact_path }}" --clobber
+          else
+            gh release create "$TAG" "${{ steps.package.outputs.artifact_path }}" --title "$TITLE" --notes "$NOTES"
+          fi
