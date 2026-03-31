@@ -8,18 +8,33 @@ struct ContentView: View {
         NavigationStack {
             Form {
                 Section("算法") {
-                    Picker("当前算法", selection: $viewModel.selectedAlgorithmID) {
-                        ForEach(viewModel.availableAlgorithms) { algorithm in
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(algorithm.name)
-                                Text(algorithm.summary)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                    ForEach(viewModel.availableAlgorithms) { algorithm in
+                        Button {
+                            viewModel.selectAlgorithmAndRun(algorithm.id)
+                        } label: {
+                            HStack(spacing: 12) {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(algorithm.name)
+                                        .font(.body.weight(.semibold))
+                                        .foregroundStyle(.primary)
+                                    Text(algorithm.summary)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+
+                                Spacer()
+
+                                if algorithm.id == viewModel.selectedAlgorithmID {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(.blue)
+                                } else {
+                                    Image(systemName: "play.circle")
+                                        .foregroundStyle(.secondary)
+                                }
                             }
-                            .tag(algorithm.id)
                         }
+                        .buttonStyle(.plain)
                     }
-                    .pickerStyle(.navigationLink)
                 }
 
                 Section("输入") {
@@ -31,12 +46,9 @@ struct ContentView: View {
                         .autocorrectionDisabled()
                 }
 
-                Section {
-                    Button("运行演示") {
-                        viewModel.runSelectedDemo()
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .frame(maxWidth: .infinity, alignment: .center)
+                    Text("点上面的算法项会立即执行当前算法，并用下面的输入参数生成结果。")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
                 }
 
                 if let result = viewModel.result {
@@ -75,4 +87,3 @@ struct ContentView: View {
         }
     }
 }
-

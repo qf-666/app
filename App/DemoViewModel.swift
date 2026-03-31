@@ -11,14 +11,19 @@ final class DemoViewModel: ObservableObject {
     @Published private(set) var result: AlgorithmRunResult?
     @Published private(set) var errorMessage: String?
 
-    private let registry: AlgorithmRegistry
+    private let registry: any AlgorithmRunning
 
-    init(registry: AlgorithmRegistry = AlgorithmRegistry()) {
+    init(registry: any AlgorithmRunning = AlgorithmRegistry()) {
         self.registry = registry
         self.availableAlgorithms = registry.supportedAlgorithms()
-        self.selectedAlgorithmID = registry.supportedAlgorithms().first?.id ?? "sm2"
+        self.selectedAlgorithmID = self.availableAlgorithms.first?.id ?? "sm2"
         self.message = "Hello from iOS SM2 demo"
         self.userID = "1234567812345678"
+    }
+
+    func selectAlgorithmAndRun(_ algorithmID: String) {
+        selectedAlgorithmID = algorithmID
+        runSelectedDemo()
     }
 
     func runSelectedDemo() {
@@ -32,4 +37,3 @@ final class DemoViewModel: ObservableObject {
         }
     }
 }
-

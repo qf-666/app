@@ -1,6 +1,6 @@
 import Foundation
 
-public final class AlgorithmRegistry {
+public final class AlgorithmRegistry: AlgorithmRunning {
     private let demos: [any AlgorithmDemo]
 
     public init(demos: [any AlgorithmDemo] = [SM2Algorithm()]) {
@@ -21,4 +21,3 @@ public final class AlgorithmRegistry {
         return try demo.runDemo(input: input)
     }
 }
-
